@@ -4,15 +4,19 @@ import java.util.Random;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import model.ControlChooser;
 
 public class GameView extends Application {
 	private static final int width = 800;
@@ -35,6 +39,10 @@ public class GameView extends Application {
 	private Scene gameScene;
 	private Canvas canvas;
 	
+	private boolean isUpPressed;
+	private boolean isDownPressed;
+	
+	ControlChooser mouse = new ControlChooser();
 	
 	@Override
 	public void start(Stage gameStage) throws Exception {
@@ -56,13 +64,80 @@ public class GameView extends Application {
 		//number of cycles in animation INDEFINITE = repeat indefinitely
 		tl.setCycleCount(Timeline.INDEFINITE);
 		
-		//mouse control (move and click)
-		canvas.setOnMouseMoved(e ->  playerOneYPos  = e.getY());
-		canvas.setOnMouseClicked(e ->  gameStarted = true);
+		
+		if (mouse.isMouseChosen()) //now in false
+			mouseControl();
+		else
+			keyboardControl();
 		
 		tl.play();
 	}
 	
+	private void keyboardControl() {
+		
+		//keyboard control
+		canvas.setFocusTraversable(true);
+		canvas.setOnKeyPressed(new EventHandler<KeyEvent>() {
+
+			@Override
+			public void handle(KeyEvent event) {
+				if (event.getCode() == KeyCode.UP) {
+					isUpPressed = true;
+					setYDirection();
+				}
+				else if (event.getCode() == KeyCode.DOWN) {
+					isDownPressed = true;
+					setYDirection();
+				}
+				else if (event.getCode() == KeyCode.ENTER) {
+					gameStarted = true;
+					playerOneYPos = height / 2;
+				}
+			}
+			
+		});
+		
+		canvas.setOnKeyReleased(new EventHandler<KeyEvent>() {
+
+			@Override
+			public void handle(KeyEvent event) {
+				if (event.getCode() == KeyCode.UP) {
+					isUpPressed = false;
+					setYDirection();
+				}
+				else if (event.getCode() == KeyCode.DOWN) {
+					isDownPressed = false;
+					setYDirection();
+				}
+				
+			}
+		
+		});
+		
+		
+	}
+	
+	private void setYDirection() {
+		
+		int speed = 20;
+		if (gameStarted && isUpPressed && !isDownPressed) {
+			if (playerOneYPos > 15) {
+				playerOneYPos -= speed;
+			}
+		}
+		
+		if (gameStarted && !isUpPressed && isDownPressed) {
+			if (playerOneYPos < 575) {
+				playerOneYPos += speed;
+			}
+		}
+	}
+	private void mouseControl() {
+		//mouse control (move and click)
+		canvas.setOnMouseClicked(e ->  gameStarted = true);
+		canvas.setOnMouseMoved(e ->  playerOneYPos  = e.getY());
+		
+	}
 
 	private void run(GraphicsContext gc) {
 		//set graphics
@@ -92,7 +167,11 @@ public class GameView extends Application {
 			//set the start text
 			gc.setStroke(Color.WHITE);
 			gc.setTextAlign(TextAlignment.CENTER);
-			gc.strokeText("Click", width / 2, height / 2);
+			//set the text
+			String fillText;
+			if (mouse.isMouseChosen()) fillText = "CLICK";
+			else fillText = "Press Enter";
+			gc.strokeText(fillText, width / 2, height / 2);
 			
 			//reset the ball start position 
 			ballXPos = width / 2;

@@ -55,6 +55,10 @@ public class GameView extends Application {
 		gameStage.show();
 	}
 	
+	public void vs2pStart(Stage gameStage) throws Exception {
+		//
+	}
+	
 	private void initialize(){
 		//background size
 		GraphicsContext gc = canvas.getGraphicsContext2D();

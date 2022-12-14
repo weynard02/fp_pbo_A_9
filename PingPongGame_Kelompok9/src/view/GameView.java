@@ -41,6 +41,8 @@ public class GameView extends Application {
 	
 	private boolean isUpPressed;
 	private boolean isDownPressed;
+	private boolean isWPressed;
+	private boolean isSPressed;
 	
 	ControlChooser mouse = new ControlChooser();
 	
@@ -56,7 +58,14 @@ public class GameView extends Application {
 	}
 	
 	public void vs2pStart(Stage gameStage) throws Exception {
-		//
+
+		gameStage.setTitle("Ping Pong");
+		canvas = new Canvas(width, height);
+		vs2pInitialize();
+		gamePane = new StackPane(canvas);
+		gameScene = new Scene(gamePane);
+		gameStage.setScene(gameScene);
+		gameStage.show();
 	}
 	
 	private void initialize(){
@@ -74,6 +83,18 @@ public class GameView extends Application {
 		else
 			keyboardControl();
 		
+		tl.play();
+	}
+	
+	private void vs2pInitialize(){
+		//background size
+		GraphicsContext gc = canvas.getGraphicsContext2D();
+		
+		//JavaFX Timeline = free form animation defined by KeyFrames and their duration 
+		Timeline tl = new Timeline(new KeyFrame(Duration.millis(10), e -> vs2pRun(gc)));
+		//number of cycles in animation INDEFINITE = repeat indefinitely
+		tl.setCycleCount(Timeline.INDEFINITE);
+		vs2pKeyboardControl();
 		tl.play();
 	}
 	
@@ -121,6 +142,67 @@ public class GameView extends Application {
 		
 	}
 	
+	private void vs2pKeyboardControl() {
+		
+		//keyboard control
+		canvas.setFocusTraversable(true);
+		canvas.setOnKeyPressed(new EventHandler<KeyEvent>() {
+
+			@Override
+			public void handle(KeyEvent event) {
+				if (event.getCode() == KeyCode.UP) {
+					isUpPressed = true;
+					setP2YDirection();
+				}
+				else if (event.getCode() == KeyCode.DOWN) {
+					isDownPressed = true;
+					setP2YDirection();
+				}
+				else if (event.getCode() == KeyCode.ENTER) {
+					gameStarted = true;
+					playerOneYPos = height / 2;
+					playerTwoYPos = height / 2;
+				}
+				else if (event.getCode() == KeyCode.W) {
+					isWPressed = true;
+					setP1YDirection();
+				}
+				else if (event.getCode() == KeyCode.S) {
+					isSPressed = true;
+					setP1YDirection();
+				}
+			}
+			
+		});
+		
+		canvas.setOnKeyReleased(new EventHandler<KeyEvent>() {
+
+			@Override
+			public void handle(KeyEvent event) {
+				if (event.getCode() == KeyCode.UP) {
+					isUpPressed = false;
+					setP2YDirection();
+				}
+				else if (event.getCode() == KeyCode.DOWN) {
+					isDownPressed = false;
+					setP2YDirection();
+				}
+				else if (event.getCode() == KeyCode.W) {
+					isWPressed = false;
+					setP1YDirection();
+				}
+				else if (event.getCode() == KeyCode.S) {
+					isSPressed = false;
+					setP1YDirection();
+				}
+				
+			}
+		
+		});
+		
+		
+	}
+	
 	private void setYDirection() {
 		
 		int speed = 20;
@@ -136,6 +218,39 @@ public class GameView extends Application {
 			}
 		}
 	}
+	
+	private void setP1YDirection() {
+		
+		int speed = 20;
+		if (gameStarted && isWPressed && !isSPressed) {
+			if (playerOneYPos > 15) {
+				playerOneYPos -= speed;
+			}
+		}
+		
+		if (gameStarted && !isWPressed && isSPressed) {
+			if (playerOneYPos < 575) {
+				playerOneYPos += speed;
+			}
+		}
+	}
+	
+	private void setP2YDirection() {
+		
+		int speed = 20;
+		if (gameStarted && isUpPressed && !isDownPressed) {
+			if (playerTwoYPos > 15) {
+				playerTwoYPos -= speed;
+			}
+		}
+		
+		if (gameStarted && !isUpPressed && isDownPressed) {
+			if (playerTwoYPos < 575) {
+				playerTwoYPos += speed;
+			}
+		}
+	}
+
 	private void mouseControl() {
 		//mouse control (move and click)
 		canvas.setOnMouseClicked(e ->  gameStarted = true);
@@ -215,6 +330,72 @@ public class GameView extends Application {
 		//draw player 1 & 2
 		gc.fillRect(playerTwoXPos, playerTwoYPos, PLAYER_WIDTH, PLAYER_HEIGHT);
 		gc.fillRect(playerOneXPos, playerOneYPos, PLAYER_WIDTH, PLAYER_HEIGHT);
-	}	
+	}
+	
+	private void vs2pRun(GraphicsContext gc) {
+		//set graphics
+		//set background color
+		gc.setFill(Color.BLACK);
+		gc.fillRect(0, 0, width, height);
+		
+		//set text
+		gc.setFill(Color.WHITE);
+		gc.setFont(Font.font(25));
+		
+		if(gameStarted) {
+			//set ball movement
+			ballXPos+=ballXSpeed;
+			ballYPos+=ballYSpeed;
+			
+			//draw the ball
+			gc.fillOval(ballXPos, ballYPos, BALL_R, BALL_R);
+			
+		} else {
+			//set the start text
+			gc.setStroke(Color.WHITE);
+			gc.setTextAlign(TextAlignment.CENTER);
+			//set the text
+			String fillText = "Press Enter";
+			gc.strokeText(fillText, width / 2, height / 2);
+			
+			//reset the ball start position 
+			ballXPos = width / 2;
+			ballYPos = height / 2;
+			
+			//reset the ball speed and the direction
+			ballXSpeed = new Random().nextInt(2) == 0 ? 1: -1;
+			ballYSpeed = new Random().nextInt(2) == 0 ? 1: -1;
+		}
+		
+		//makes sure the ball stays in the canvas
+		if(ballYPos > height || ballYPos < 0) ballYSpeed *=-1;
+		
+		//if p1 miss the ball, p2  gets a point
+		if(ballXPos < playerOneXPos - PLAYER_WIDTH) {
+			scoreP2++;
+			gameStarted = false;
+		}
+		
+		//if p2 misses the ball, p1 get a point
+		if(ballXPos > playerTwoXPos + PLAYER_WIDTH) {  
+			scoreP1++;
+			gameStarted = false;
+		}
+	
+		//increase the speed after the ball hits the player
+		if( ((ballXPos + BALL_R > playerTwoXPos) && ballYPos >= playerTwoYPos && ballYPos <= playerTwoYPos + PLAYER_HEIGHT) || 
+			((ballXPos < playerOneXPos + PLAYER_WIDTH) && ballYPos >= playerOneYPos && ballYPos <= playerOneYPos + PLAYER_HEIGHT)) {
+			ballYSpeed += 1 * Math.signum(ballYSpeed);
+			ballXSpeed += 1 * Math.signum(ballXSpeed);
+			ballXSpeed *= -1;
+			ballYSpeed *= -1;
+		}
+		
+		//draw score
+		gc.fillText(scoreP1 + "\t\t\t\t\t\t\t\t" + scoreP2, width / 2, 100);
+		//draw player 1 & 2
+		gc.fillRect(playerTwoXPos, playerTwoYPos, PLAYER_WIDTH, PLAYER_HEIGHT);
+		gc.fillRect(playerOneXPos, playerOneYPos, PLAYER_WIDTH, PLAYER_HEIGHT);
+	}
 		
 }

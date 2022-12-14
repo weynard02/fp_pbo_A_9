@@ -3,13 +3,15 @@ package application;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import view.GameView;
+import view.MenuView;
 
 public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		try {
-			GameView game = new GameView();
-			game.vs2pStart(primaryStage);
+			MenuView manager = new MenuView();
+			primaryStage = manager.getMainStage();
+			primaryStage.show();
 			
 		} catch(Exception e) {
 			e.printStackTrace();

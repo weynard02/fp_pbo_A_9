@@ -58,6 +58,7 @@ public class GameView extends Application {
 	}
 	
 	public void vs2pStart(Stage gameStage) throws Exception {
+
 		gameStage.setTitle("Ping Pong");
 		canvas = new Canvas(width, height);
 		vs2pInitialize();

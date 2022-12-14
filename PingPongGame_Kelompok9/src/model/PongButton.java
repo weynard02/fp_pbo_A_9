@@ -19,8 +19,8 @@ public class PongButton extends Button{
 	public PongButton (String text) {
 		setText(text);
 		setButtonFont();
-		setPrefWidth(150);
-		setPrefHeight(45);
+		setPrefWidth(190);
+		setPrefHeight(49);
 		setStyle(BUTTON_FREE_STYLE);
 		initializeButton();
 	}

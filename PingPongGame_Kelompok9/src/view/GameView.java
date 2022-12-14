@@ -114,7 +114,7 @@ public class GameView extends Application {
 					isDownPressed = true;
 					setYDirection();
 				}
-				else if (event.getCode() == KeyCode.ENTER) {
+				else if (event.getCode() == KeyCode.SPACE) {
 					gameStarted = true;
 					playerOneYPos = height / 2;
 				}
@@ -158,7 +158,7 @@ public class GameView extends Application {
 					isDownPressed = true;
 					setP2YDirection();
 				}
-				else if (event.getCode() == KeyCode.ENTER) {
+				else if (event.getCode() == KeyCode.SPACE) {
 					gameStarted = true;
 					playerOneYPos = height / 2;
 					playerTwoYPos = height / 2;
@@ -289,7 +289,7 @@ public class GameView extends Application {
 			//set the text
 			String fillText;
 			if (mouse.isMouseChosen()) fillText = "CLICK";
-			else fillText = "Press Enter";
+			else fillText = "Press Space";
 			gc.strokeText(fillText, width / 2, height / 2);
 			
 			//reset the ball start position 
@@ -355,7 +355,7 @@ public class GameView extends Application {
 			gc.setStroke(Color.WHITE);
 			gc.setTextAlign(TextAlignment.CENTER);
 			//set the text
-			String fillText = "Press Enter";
+			String fillText = "Press Space";
 			gc.strokeText(fillText, width / 2, height / 2);
 			
 			//reset the ball start position 

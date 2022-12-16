@@ -16,7 +16,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import model.ControlChooser;
 
 public class GameView extends Application {
 	private static final int width = 800;
@@ -38,13 +37,14 @@ public class GameView extends Application {
 	private StackPane gamePane;
 	private Scene gameScene;
 	private Canvas canvas;
+	private Color backgroundColor;
+	private Color fontColor;
 	
 	private boolean isUpPressed;
 	private boolean isDownPressed;
 	private boolean isWPressed;
 	private boolean isSPressed;
-	
-	ControlChooser mouse = new ControlChooser();
+	private boolean isMouseChosen;	
 	
 	@Override
 	public void start(Stage gameStage) throws Exception {
@@ -68,6 +68,19 @@ public class GameView extends Application {
 		gameStage.show();
 	}
 	
+	public void setBackgroundColor(Color backgroundColor) {
+		this.backgroundColor = backgroundColor;
+	}
+	
+	public void setFontColor(Color fontColor) {
+		this.fontColor = fontColor;
+	}
+	
+	
+	public void setMouseChosen(boolean isMouseChosen) {
+		this.isMouseChosen = isMouseChosen;
+	}
+
 	private void initialize(){
 		//background size
 		GraphicsContext gc = canvas.getGraphicsContext2D();
@@ -77,8 +90,7 @@ public class GameView extends Application {
 		//number of cycles in animation INDEFINITE = repeat indefinitely
 		tl.setCycleCount(Timeline.INDEFINITE);
 		
-		
-		if (mouse.isMouseChosen()) //now in false
+		if (isMouseChosen)
 			mouseControl();
 		else
 			keyboardControl();
@@ -261,11 +273,11 @@ public class GameView extends Application {
 	private void run(GraphicsContext gc) {
 		//set graphics
 		//set background color
-		gc.setFill(Color.BLACK);
+		gc.setFill(backgroundColor);
 		gc.fillRect(0, 0, width, height);
 		
 		//set text
-		gc.setFill(Color.WHITE);
+		gc.setFill(fontColor);
 		gc.setFont(Font.font(25));
 		
 		if(gameStarted) {
@@ -284,11 +296,11 @@ public class GameView extends Application {
 			
 		} else {
 			//set the start text
-			gc.setStroke(Color.WHITE);
+			gc.setStroke(fontColor);
 			gc.setTextAlign(TextAlignment.CENTER);
 			//set the text
 			String fillText;
-			if (mouse.isMouseChosen()) fillText = "CLICK";
+			if (isMouseChosen) fillText = "CLICK";
 			else fillText = "Press Space";
 			gc.strokeText(fillText, width / 2, height / 2);
 			
@@ -335,11 +347,11 @@ public class GameView extends Application {
 	private void vs2pRun(GraphicsContext gc) {
 		//set graphics
 		//set background color
-		gc.setFill(Color.BLACK);
+		gc.setFill(backgroundColor);
 		gc.fillRect(0, 0, width, height);
 		
 		//set text
-		gc.setFill(Color.WHITE);
+		gc.setFill(fontColor);
 		gc.setFont(Font.font(25));
 		
 		if(gameStarted) {
@@ -352,7 +364,7 @@ public class GameView extends Application {
 			
 		} else {
 			//set the start text
-			gc.setStroke(Color.WHITE);
+			gc.setStroke(fontColor);
 			gc.setTextAlign(TextAlignment.CENTER);
 			//set the text
 			String fillText = "Press Space";

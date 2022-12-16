@@ -17,11 +17,11 @@ public class PongSubScene extends SubScene {
 	private boolean isHidden;
 	
 	public PongSubScene() {
-		super(new AnchorPane(), 400, 400);
-		prefWidth(400);
+		super(new AnchorPane(), 600, 400);
+		prefWidth(600);
 		prefHeight(400);
 		
-		BackgroundImage image = new BackgroundImage(new Image(BACKGROUND_IMG, 400, 400, false, true), 
+		BackgroundImage image = new BackgroundImage(new Image(BACKGROUND_IMG, 600, 400, false, true), 
 				BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, null);
 
 		AnchorPane root2 = (AnchorPane) this.getRoot();
@@ -30,7 +30,7 @@ public class PongSubScene extends SubScene {
 		
 		isHidden =  true;
 		
-		setLayoutX(200);
+		setLayoutX(100);
 		setLayoutY(800);
 	}
 	

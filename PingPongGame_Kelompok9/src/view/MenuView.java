@@ -13,13 +13,15 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import model.InfoLabel;
 import model.PongButton;
-import model.PongRadioButton;
+import model.ColorRadioButton;
 import model.PongSubScene;
-import model.PongToggleGroup;
+import model.TitleLabel;
+import model.ColorToggleGroup;
+import model.ControllerRadioButton;
+import model.ControllerToggleGroup;
 
 public class MenuView {
 	private static final int HEIGHT = 600;
@@ -31,14 +33,17 @@ public class MenuView {
 	private PongSubScene helpSubScene;
 	private PongSubScene vsCPUSubScene;
 	private PongSubScene vs2PSubScene;
-	private Color backgroundColor;
-	private Color fontColor;
-	private boolean isMouseChosen;
+	ColorToggleGroup vsCPUTgColor;
+	ColorToggleGroup vs2PTgColor;
+	ControllerToggleGroup tgController;
 	
 	List <PongButton> menuButtons;
 	
 	public MenuView() {
 		menuButtons = new ArrayList<>();
+		vsCPUTgColor = new ColorToggleGroup();
+		vs2PTgColor = new ColorToggleGroup();
+		tgController = new ControllerToggleGroup();
 		mainPane = new AnchorPane();
 		mainScene = new Scene(mainPane, WIDTH, HEIGHT);
 		mainStage = new Stage();
@@ -47,6 +52,7 @@ public class MenuView {
 		createBackground();
 		createLogo();
 		createSubScene();
+		createToggleGroup();
 	}
 	
 	private void createSubScene() {
@@ -90,7 +96,6 @@ public class MenuView {
 				+ "(Paddle will follow\t\tP2\t\tUp\t\tUp\n"
 				+ "cursor if you choose\t\tP2\t\tDown\tDown\n"
 				+ "mouse as controller)");
-		
 		creditsLabel.setLayoutX(100);
 		creditsLabel.setLayoutY(-80);
 		helpSubScene.getPane().getChildren().add(creditsLabel);
@@ -100,24 +105,6 @@ public class MenuView {
 	private void createVSCPUSubScene() {
 		vsCPUSubScene = new PongSubScene();
 		mainPane.getChildren().add(vsCPUSubScene);
-		PongToggleGroup tgVSCPU = new PongToggleGroup();
-		for(PongRadioButton rb : tgVSCPU.getListBackroundColor()) {
-			vsCPUSubScene.getPane().getChildren().add(rb);
-		}
-		for(PongRadioButton rb : tgVSCPU.getListController()) {
-			vsCPUSubScene.getPane().getChildren().add(rb);
-		}
-		backgroundColor = (Color) tgVSCPU.getTgBackgroundColor().getSelectedToggle().getUserData();
-		if(backgroundColor == Color.WHITE) {
-			fontColor = Color.BLACK;
-		}else {
-			fontColor = Color.WHITE;
-		}
-		if(tgVSCPU.getTgBackgroundColor().getSelectedToggle().getUserData().equals("Mouse")) {
-			isMouseChosen = true;
-		}else {
-			isMouseChosen = false;
-		}
 		vsCPUSubScene.getPane().getChildren().add(createToBackButton(vsCPUSubScene));
 		vsCPUSubScene.getPane().getChildren().add(createVSCPUStartButton());
 		
@@ -125,18 +112,8 @@ public class MenuView {
 	private void createVS2PSubScene() {
 		vs2PSubScene = new PongSubScene();
 		mainPane.getChildren().add(vs2PSubScene);
-		PongToggleGroup tgVS2P = new PongToggleGroup();
-		for(PongRadioButton rb : tgVS2P.getListBackroundColor()) {
-			vs2PSubScene.getPane().getChildren().add(rb);
-		}
-		backgroundColor = (Color) tgVS2P.getTgBackgroundColor().getSelectedToggle().getUserData();
-		if(backgroundColor == Color.WHITE) {
-			fontColor = Color.BLACK;
-		}else {
-			fontColor = Color.WHITE;
-		}
 		vs2PSubScene.getPane().getChildren().add(createToBackButton(vs2PSubScene));
-		vs2PSubScene.getPane().getChildren().add(createVSCPUStartButton());
+		vs2PSubScene.getPane().getChildren().add(createVS2PStartButton());
 		
 	}
 	
@@ -170,21 +147,69 @@ public class MenuView {
 		createExitButton();
 	}
 	
+	private void createToggleGroup() {
+		createVSCPUTgColor();
+		createVS2PTgColor();
+		createTgController();
+	}
+	
+	private void createVSCPUTgColor() {
+		TitleLabel backgroundColorLabel = new TitleLabel("background color");
+		backgroundColorLabel.setLayoutX(35);
+		backgroundColorLabel.setLayoutY(30);
+		vsCPUSubScene.getPane().getChildren().add(backgroundColorLabel);
+		for(int i = 0; i < 4; i++) {
+			for(int j = 0; j < 4; j++) {
+				vsCPUTgColor.getListBackgroundColor().get(4*i+j).setLayoutX(35+150*j);
+				vsCPUTgColor.getListBackgroundColor().get(4*i+j).setLayoutY(80+30*i);
+				vsCPUSubScene.getPane().getChildren().add(vsCPUTgColor.getListBackgroundColor().get(4*i+j));
+			}
+		}
+	}
+	
+	private void createVS2PTgColor() {
+		TitleLabel backgroundColorLabel = new TitleLabel("background color");
+		backgroundColorLabel.setLayoutX(35);
+		backgroundColorLabel.setLayoutY(30);
+		vs2PSubScene.getPane().getChildren().add(backgroundColorLabel);
+		for(int i = 0; i < 4; i++) {
+			for(int j = 0; j < 4; j++) {
+				vs2PTgColor.getListBackgroundColor().get(4*i+j).setLayoutX(35+150*j);
+				vs2PTgColor.getListBackgroundColor().get(4*i+j).setLayoutY(80+30*i);
+				vs2PSubScene.getPane().getChildren().add(vs2PTgColor.getListBackgroundColor().get(4*i+j));
+			}
+		}
+	}
+	
+	private void createTgController() {
+		TitleLabel controllerLabel = new TitleLabel("controller");
+		controllerLabel.setLayoutX(35);
+		controllerLabel.setLayoutY(220);
+		vsCPUSubScene.getPane().getChildren().add(controllerLabel);
+		for(int i = 0; i < 2; i++) {
+			tgController.getListController().get(i).setLayoutX(35+150*i);
+			tgController.getListController().get(i).setLayoutY(270);
+			vsCPUSubScene.getPane().getChildren().add(tgController.getListController().get(i));
+		}
+	}
+	
 	private PongButton createVSCPUStartButton() {
-		PongButton startVSCPUButton = new PongButton("Start");
-		startVSCPUButton.setLayoutX(300);
-		startVSCPUButton.setLayoutY(320);
+		PongButton vsCPUStartButton = new PongButton("Start");
+		vsCPUStartButton.setLayoutX(390);
+		vsCPUStartButton.setLayoutY(320);
 		
-		startVSCPUButton.setOnAction(new EventHandler<ActionEvent>() {
+		vsCPUStartButton.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
 			public void handle(ActionEvent event) {
 				try {
-					if(backgroundColor != null) {
+					ColorRadioButton selectedColorRB = (ColorRadioButton) vsCPUTgColor.getTgBackgroundColor().getSelectedToggle();
+					ControllerRadioButton selectedControllerRB = (ControllerRadioButton) tgController.getTgController().getSelectedToggle();
+					if(selectedColorRB != null && selectedControllerRB != null) {
 						GameView game = new GameView();
-						game.setBackgroundColor(backgroundColor);
-						game.setFontColor(fontColor);
-						game.setMouseChosen(isMouseChosen);
+						game.setBackgroundColor(selectedColorRB.getBackgroundColor());
+						game.setFontColor(selectedColorRB.getFontColor());
+						game.setMouseChosen(selectedControllerRB.isMouseChosen());
 						game.start(mainStage);
 					}
 				} catch (Exception e) {
@@ -193,22 +218,23 @@ public class MenuView {
 			}
 			
 		});
-		return startVSCPUButton;	
+		return vsCPUStartButton;	
 	}
 	private PongButton createVS2PStartButton() {
-		PongButton startVS2PButton = new PongButton("Start");
-		startVS2PButton.setLayoutX(300);
-		startVS2PButton.setLayoutY(320);
+		PongButton vs2PStartButton = new PongButton("Start");
+		vs2PStartButton.setLayoutX(390);
+		vs2PStartButton.setLayoutY(320);
 		
-		startVS2PButton.setOnAction(new EventHandler<ActionEvent>() {
+		vs2PStartButton.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
 			public void handle(ActionEvent event) {
 				try {
-					if(backgroundColor != null) {
+					ColorRadioButton selectedColorRB = (ColorRadioButton) vs2PTgColor.getTgBackgroundColor().getSelectedToggle();
+					if(selectedColorRB != null) {
 						GameView game = new GameView();
-						game.setBackgroundColor(backgroundColor);
-						game.setFontColor(fontColor);
+						game.setBackgroundColor(selectedColorRB.getBackgroundColor());
+						game.setFontColor(selectedColorRB.getFontColor());
 						game.vs2pStart(mainStage);
 					}
 				} catch (Exception e) {
@@ -217,26 +243,23 @@ public class MenuView {
 			}
 			
 		});
-		return startVS2PButton;	
+		return vs2PStartButton;	
 	}
 
 	private PongButton createToBackButton(PongSubScene subScene) {
-		PongButton creditsBackButton = new PongButton("Back");
-		creditsBackButton.setLayoutX(200);
-		creditsBackButton.setLayoutY(320);
+		PongButton backButton = new PongButton("Back");
+		backButton.setLayoutX(200);
+		backButton.setLayoutY(320);
 		
-		creditsBackButton.setOnAction(new EventHandler<ActionEvent>() {
+		backButton.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
 			public void handle(ActionEvent event) {
 				closeSubScene(subScene);
-				backgroundColor = null;
-				fontColor = null;
-				isMouseChosen = false;
 			}
 			
 		});
-		return creditsBackButton;	
+		return backButton;	
 	}
 	
 	private void createVSCPUButton() {

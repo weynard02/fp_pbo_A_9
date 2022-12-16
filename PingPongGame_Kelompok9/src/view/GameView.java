@@ -16,7 +16,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import model.ControlChooser;
 
 public class GameView extends Application {
 	private static final int width = 800;
@@ -45,10 +44,7 @@ public class GameView extends Application {
 	private boolean isDownPressed;
 	private boolean isWPressed;
 	private boolean isSPressed;
-	private boolean isMouseChosen;
-	
-	private ControlChooser mouse = new ControlChooser();
-	
+	private boolean isMouseChosen;	
 	
 	@Override
 	public void start(Stage gameStage) throws Exception {
@@ -94,8 +90,7 @@ public class GameView extends Application {
 		//number of cycles in animation INDEFINITE = repeat indefinitely
 		tl.setCycleCount(Timeline.INDEFINITE);
 		
-		mouse.setMouseChosen(isMouseChosen);
-		if (mouse.isMouseChosen()) //now in false
+		if (isMouseChosen)
 			mouseControl();
 		else
 			keyboardControl();
@@ -305,7 +300,7 @@ public class GameView extends Application {
 			gc.setTextAlign(TextAlignment.CENTER);
 			//set the text
 			String fillText;
-			if (mouse.isMouseChosen()) fillText = "CLICK";
+			if (isMouseChosen) fillText = "CLICK";
 			else fillText = "Press Space";
 			gc.strokeText(fillText, width / 2, height / 2);
 			

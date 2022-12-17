@@ -29,10 +29,6 @@ public class InfoLabel extends Label{
 		setWrapText(true);
 		setLabelFont();
 		setAlignment(Pos.CENTER);
-//		BackgroundImage backgroundImage = new BackgroundImage(new Image(BACKGROUND_IMAGE, 380, 49, false, true), BackgroundRepeat.NO_REPEAT,
-//				BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, null);
-		
-	//	setBackground(new Background(backgroundImage));
 	}
 	
 	private void setLabelFont() {

@@ -17,6 +17,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
@@ -81,8 +82,9 @@ public class GameView extends Application {
 			obstacleHandler();
 			createGameLoop();
 		}
+//		
 		
-
+//		gameStage.getIcons().add(new Image("\\model\\resources\\Ping-Pong-icon.png"));
 		gameScene = new Scene(gamePane);
 		gameStage.setScene(gameScene);
 		

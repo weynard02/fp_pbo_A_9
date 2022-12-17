@@ -1,6 +1,7 @@
 package view;
 
 import java.util.ArrayList;
+
 import java.util.List;
 
 import javafx.event.ActionEvent;
@@ -23,6 +24,7 @@ import model.ColorToggleGroup;
 import model.ControllerRadioButton;
 import model.ControllerToggleGroup;
 
+
 public class MenuView {
 	private static final int HEIGHT = 600;
 	private static final int WIDTH = 800;
@@ -44,7 +46,7 @@ public class MenuView {
 	
 	
 	public MenuView() {
-		ImageView logo = new ImageView("\\model\\resources\\Ping-Pong-icon.png");
+//		ImageView logo = new ImageView("\\model\\resources\\Ping-Pong-icon.png");
 		menuButtons = new ArrayList<>();
 		vsCPUTgColor = new ColorToggleGroup();
 		vs2PTgColor = new ColorToggleGroup();
@@ -53,8 +55,9 @@ public class MenuView {
 		mainScene = new Scene(mainPane, WIDTH, HEIGHT);
 		mainStage = new Stage();
 		mainStage.setScene(mainScene);
+		mainStage.setTitle("Ping Pong");
 		
-		
+		mainStage.getIcons().add(new Image("\\model\\resources\\Ping-Pong-icon.png"));
 		
 		createButtons();
 		createBackground();

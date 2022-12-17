@@ -193,6 +193,7 @@ public class GameView extends Application {
 				else if(event.getCode() == KeyCode.ESCAPE && pauseFlag && gameStarted) {
 					tl.pause();
 					gc.strokeText("Press SPACE to Continue", width/2, height/2);
+					gc.strokeText("Press ESC to main menu", width/2, height/2 + 30);
 					
 					pauseFlag = false;
 				}else if(event.getCode() == KeyCode.ESCAPE && !pauseFlag && gameStarted) {
@@ -265,6 +266,7 @@ public class GameView extends Application {
 				else if(event.getCode() == KeyCode.ESCAPE && pauseFlag && gameStarted) {
 					tl.pause();
 					gc.strokeText("Press SPACE to Continue", width/2, height/2);
+					gc.strokeText("Press ESC to main menu", width/2, height/2 + 30);
 					
 					pauseFlag = false;
 				}else if(event.getCode() == KeyCode.ESCAPE && !pauseFlag && gameStarted) {
@@ -642,6 +644,7 @@ public class GameView extends Application {
 				if(event.getCode() == KeyCode.ESCAPE && pauseFlag && gameStarted) {
 					tl.pause();
 					gc.strokeText("Click to Continue", width/2, height/2);
+					gc.strokeText("Press ESC to main menu", width/2, height/2 + 30);
 					
 					pauseFlag = false;
 				}else if(event.getCode() == KeyCode.ESCAPE && !pauseFlag && gameStarted) {

@@ -20,6 +20,7 @@ import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -133,7 +134,7 @@ public class GameView extends Application {
 	private void initialize(Stage gameStage){
 		//background size
 		GraphicsContext gc = canvas.getGraphicsContext2D();
-		pauseGameMouse(gc, gameStage);
+		
 		
 		//JavaFX Timeline = free form animation defined by KeyFrames and their duration 
 		tl = new Timeline(new KeyFrame(Duration.millis(10), e -> run(gc)));
@@ -141,8 +142,8 @@ public class GameView extends Application {
 		tl.setCycleCount(Timeline.INDEFINITE);
 		
 		if (isMouseChosen) {
+			pauseGameMouse(gc, gameStage);
 			mouseControl();
-//			pauseGameMouse(gc, gameStage);
 		}	
 		else {
 			keyboardControl(gc, gameStage);
@@ -183,25 +184,25 @@ public class GameView extends Application {
 					isDownPressed = true;
 					setYDirection();
 				}
-				else if (event.getCode() == KeyCode.SPACE && inSpace) {
+				else if (event.getCode() == KeyCode.SPACE && inSpace && !gameStarted) {
 					gameStarted = true;
 					playerOneYPos = height / 2;
 					inSpace = false;
 				}
 				
-				else if(event.getCode() == KeyCode.ESCAPE && pauseFlag ) {
+				else if(event.getCode() == KeyCode.ESCAPE && pauseFlag && gameStarted) {
 					tl.pause();
-					gc.strokeText("Click SPACE to Continue", width/2, height/2);
+					gc.strokeText("Press SPACE to Continue", width/2, height/2);
 					
 					pauseFlag = false;
-				}else if(event.getCode() == KeyCode.ESCAPE && !pauseFlag) {
+				}else if(event.getCode() == KeyCode.ESCAPE && !pauseFlag && gameStarted) {
 					// BACK TO MAIN MENU
 					gameStage.close();
 					MenuView menu = new MenuView();
 					menu.getMainStage().show();
 					
 					pauseFlag = true; 
-				}else if(event.getCode() == KeyCode.SPACE && !inSpace ) {
+				}else if(event.getCode() == KeyCode.SPACE && !inSpace && gameStarted) {
 					tl.play();
 					pauseFlag = true;
 				}
@@ -246,7 +247,7 @@ public class GameView extends Application {
 					isDownPressed = true;
 					setP2YDirection();
 				}
-				else if (event.getCode() == KeyCode.SPACE && vs2inSpace) {
+				else if (event.getCode() == KeyCode.SPACE && vs2inSpace && !gameStarted) {
 					gameStarted = true;
 					playerOneYPos = height / 2;
 					playerTwoYPos = height / 2;
@@ -261,19 +262,19 @@ public class GameView extends Application {
 					setP1YDirection();
 				}
 				
-				else if(event.getCode() == KeyCode.ESCAPE && pauseFlag ) {
+				else if(event.getCode() == KeyCode.ESCAPE && pauseFlag && gameStarted) {
 					tl.pause();
-					gc.strokeText("Click SPACE to Continue", width/2, height/2);
+					gc.strokeText("Press SPACE to Continue", width/2, height/2);
 					
 					pauseFlag = false;
-				}else if(event.getCode() == KeyCode.ESCAPE && !pauseFlag) {
+				}else if(event.getCode() == KeyCode.ESCAPE && !pauseFlag && gameStarted) {
 					// BACK TO MAIN MENU
 					gameStage.close();
 					MenuView menu = new MenuView();
 					menu.getMainStage().show();
 					
 					pauseFlag = true; 
-				}else if(event.getCode() == KeyCode.SPACE && !vs2inSpace ) {
+				}else if(event.getCode() == KeyCode.SPACE && !vs2inSpace && gameStarted) {
 					tl.play();
 					pauseFlag = true;
 				}
@@ -415,12 +416,14 @@ public class GameView extends Application {
 		if(ballXPos < playerOneXPos - PLAYER_WIDTH) {
 			scoreP2++;
 			gameStarted = false;
+			inSpace = true;
 		}
 		
 		//if the computer misses the ball, you get a point
 		if(ballXPos > playerTwoXPos + PLAYER_WIDTH) {  
 			scoreP1++;
 			gameStarted = false;
+			inSpace = true;
 		}
 	
 		//increase the speed after the ball hits the player
@@ -484,12 +487,14 @@ public class GameView extends Application {
 		if(ballXPos < playerOneXPos - PLAYER_WIDTH) {
 			scoreP2++;
 			gameStarted = false;
+			vs2inSpace = true;
 		}
 		
 		//if p2 misses the ball, p1 get a point
 		if(ballXPos > playerTwoXPos + PLAYER_WIDTH) {  
 			scoreP1++;
 			gameStarted = false;
+			vs2inSpace = true;
 		}
 	
 		//increase the speed after the ball hits the player
@@ -634,23 +639,30 @@ public class GameView extends Application {
 			@Override
 			public void handle(KeyEvent event) {
 				// TODO Auto-generated method stub
-				if(event.getCode() == KeyCode.ESCAPE && pauseFlag ) {
+				if(event.getCode() == KeyCode.ESCAPE && pauseFlag && gameStarted) {
 					tl.pause();
-					gc.strokeText("Click SPACE to Continue", width/2, height/2);
+					gc.strokeText("Click to Continue", width/2, height/2);
 					
 					pauseFlag = false;
-				}else if(event.getCode() == KeyCode.ESCAPE && !pauseFlag) {
+				}else if(event.getCode() == KeyCode.ESCAPE && !pauseFlag && gameStarted) {
 					// BACK TO MAIN MENU
 					gameStage.close();
 					MenuView menu = new MenuView();
 					menu.getMainStage().show();
 					
 					pauseFlag = true; 
-				}else if(event.getCode() == KeyCode.SPACE ) {
-					tl.play();
-					pauseFlag = true;
 				}
 				
+			}
+			
+		});
+		canvas.setOnMousePressed(new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				if (gameStarted)
+					tl.play();
+					pauseFlag = true;
 			}
 			
 		});

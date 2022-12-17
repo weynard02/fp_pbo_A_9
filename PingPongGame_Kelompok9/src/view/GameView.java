@@ -56,6 +56,7 @@ public class GameView extends Application {
 	private Color backgroundColor;
 	private Color fontColor;
 	private Timeline tl;
+	boolean pauseFlag = true;
 
 //	private Button btnPause;
 	
@@ -130,7 +131,7 @@ public class GameView extends Application {
 	private void initialize(Stage gameStage){
 		//background size
 		GraphicsContext gc = canvas.getGraphicsContext2D();
-		
+		pauseGameMouse(gc, gameStage);
 		
 		//JavaFX Timeline = free form animation defined by KeyFrames and their duration 
 		tl = new Timeline(new KeyFrame(Duration.millis(10), e -> run(gc)));
@@ -139,7 +140,7 @@ public class GameView extends Application {
 		
 		if (isMouseChosen) {
 			mouseControl();
-			pauseGameMouse(gc, gameStage);
+//			pauseGameMouse(gc, gameStage);
 		}	
 		else {
 			keyboardControl(gc, gameStage);
@@ -157,7 +158,7 @@ public class GameView extends Application {
 		//JavaFX Timeline = free form animation defined by KeyFrames and their duration 
 		tl = new Timeline(new KeyFrame(Duration.millis(10), e -> vs2pRun(gc)));
 		//number of cycles in animation INDEFINITE = repeat indefinitely
-		pauseGameMouse(gc, gameStage);
+//		pauseGameMouse(gc, gameStage);
 		tl.setCycleCount(Timeline.INDEFINITE);
 		vs2pKeyboardControl(gc, gameStage);
 		tl.play();
@@ -183,7 +184,24 @@ public class GameView extends Application {
 					gameStarted = true;
 					playerOneYPos = height / 2;
 				}
-				pauseGameMouse(gc, gameStage);
+				
+				if(event.getCode() == KeyCode.ESCAPE && pauseFlag ) {
+					tl.pause();
+					gc.strokeText("Click SPACE to Continue", width/2, height/2);
+					
+					pauseFlag = false;
+				}else if(event.getCode() == KeyCode.ESCAPE && !pauseFlag) {
+					// BACK TO MAIN MENU
+					gameStage.close();
+					MenuView menu = new MenuView();
+					menu.getMainStage().show();
+					
+					pauseFlag = true; 
+				}else if(event.getCode() == KeyCode.SPACE ) {
+					tl.play();
+					pauseFlag = true;
+				}
+				
 			}
 			
 		});
@@ -237,11 +255,28 @@ public class GameView extends Application {
 					isSPressed = true;
 					setP1YDirection();
 				}
-				pauseGameMouse(gc, gameStage);
+				
+				if(event.getCode() == KeyCode.ESCAPE && pauseFlag ) {
+					tl.pause();
+					gc.strokeText("Click SPACE to Continue", width/2, height/2);
+					
+					pauseFlag = false;
+				}else if(event.getCode() == KeyCode.ESCAPE && !pauseFlag) {
+					// BACK TO MAIN MENU
+					gameStage.close();
+					MenuView menu = new MenuView();
+					menu.getMainStage().show();
+					
+					pauseFlag = true; 
+				}else if(event.getCode() == KeyCode.SPACE ) {
+					tl.play();
+					pauseFlag = true;
+				}
+				
 			}
 			
 		});
-		
+
 		canvas.setOnKeyReleased(new EventHandler<KeyEvent>() {
 
 			@Override
@@ -583,7 +618,7 @@ public class GameView extends Application {
 	}
 		
 
-	boolean pauseFlag = true;
+	
 	private void pauseGameMouse(GraphicsContext gc, Stage gameStage) {
 		
 		canvas.setFocusTraversable(true);

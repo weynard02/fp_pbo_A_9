@@ -44,6 +44,7 @@ public class MenuView {
 	
 	
 	public MenuView() {
+		ImageView logo = new ImageView("\\model\\resources\\Ping-Pong-icon.png");
 		menuButtons = new ArrayList<>();
 		vsCPUTgColor = new ColorToggleGroup();
 		vs2PTgColor = new ColorToggleGroup();
@@ -52,6 +53,9 @@ public class MenuView {
 		mainScene = new Scene(mainPane, WIDTH, HEIGHT);
 		mainStage = new Stage();
 		mainStage.setScene(mainScene);
+		
+		
+		
 		createButtons();
 		createBackground();
 		createLogo();

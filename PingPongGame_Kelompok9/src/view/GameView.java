@@ -1,6 +1,9 @@
 package view;
 
+
 import java.util.Random;
+
+import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -10,8 +13,9 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
@@ -34,11 +38,16 @@ public class GameView extends Application {
 	private boolean gameStarted;
 	private int playerOneXPos = 0;
 	private double playerTwoXPos = width - PLAYER_WIDTH;
-	private StackPane gamePane;
+	private AnchorPane gamePane;
 	private Scene gameScene;
 	private Canvas canvas;
+	private Rectangle obstacleTop;
+	private Rectangle obstacleBottom;
+	private Rectangle obstacleMiddle;
+	private AnimationTimer gameTimer;
 	private Color backgroundColor;
 	private Color fontColor;
+
 	
 	private boolean isUpPressed;
 	private boolean isDownPressed;
@@ -51,9 +60,13 @@ public class GameView extends Application {
 		gameStage.setTitle("Ping Pong");
 		canvas = new Canvas(width, height);
 		initialize();
-		gamePane = new StackPane(canvas);
+		
+		gamePane = new AnchorPane(canvas);
+		obstacleHandler();
+		createGameLoop();
 		gameScene = new Scene(gamePane);
 		gameStage.setScene(gameScene);
+		
 		gameStage.show();
 	}
 	
@@ -62,7 +75,10 @@ public class GameView extends Application {
 		gameStage.setTitle("Ping Pong");
 		canvas = new Canvas(width, height);
 		vs2pInitialize();
-		gamePane = new StackPane(canvas);
+		
+		gamePane = new AnchorPane(canvas);
+		obstacleHandler();
+		createGameLoop();
 		gameScene = new Scene(gamePane);
 		gameStage.setScene(gameScene);
 		gameStage.show();
@@ -336,6 +352,9 @@ public class GameView extends Application {
 			ballXSpeed *= -1;
 			ballYSpeed *= -1;
 		}
+		collisionObstacle();
+		
+		
 		
 		//draw score
 		gc.fillText(scoreP1 + "\t\t\t\t\t\t\t\t" + scoreP2, width / 2, 100);
@@ -403,11 +422,128 @@ public class GameView extends Application {
 			ballYSpeed *= -1;
 		}
 		
+		collisionObstacle();
+		
 		//draw score
 		gc.fillText(scoreP1 + "\t\t\t\t\t\t\t\t" + scoreP2, width / 2, 100);
 		//draw player 1 & 2
 		gc.fillRect(playerTwoXPos, playerTwoYPos, PLAYER_WIDTH, PLAYER_HEIGHT);
 		gc.fillRect(playerOneXPos, playerOneYPos, PLAYER_WIDTH, PLAYER_HEIGHT);
 	}
+	
+	private void obstacleHandler() {
+	    int ObstacleWidth = 20;
+	    double xPosition = width/2;
+	    double yPosition = 0;
+	    double obstacleHeight = 100;
+	    
+	    
+	    obstacleTop = new Rectangle(xPosition, yPosition ,ObstacleWidth ,obstacleHeight);
+	    obstacleMiddle = new Rectangle(xPosition, yPosition + 230, ObstacleWidth, obstacleHeight -60);
+	    obstacleBottom = new Rectangle(xPosition,yPosition + 400,  ObstacleWidth,obstacleHeight );
+	    
+	    obstacleTop.setFill(javafx.scene.paint.Color.WHITE);
+	    obstacleBottom.setFill(javafx.scene.paint.Color.WHITE);
+	    obstacleMiddle.setFill(javafx.scene.paint.Color.WHITE);
+	    gamePane.getChildren().addAll(obstacleTop, obstacleBottom, obstacleMiddle);
+}
+	    
+	    
+	
+	private void collisionObstacle() {
+		double obstacleHeight = 100;
+		int ObstacleWidth = 20;
+		System.out.println("ini Y bola : " + ballYPos);
+		
+		
+		
+		double topKiri = 400;
+		double topKanan = 400 + ObstacleWidth;
+		double topAtas = obstacleTop.getY();
+		double topBawah = obstacleTop.getY() + obstacleHeight  ;
+		
+		double bottomKiri = 400;
+		double bottomKanan = 400 + ObstacleWidth;
+		double bottomAtas = obstacleBottom.getY();
+		double bottomBawah = obstacleBottom.getY() + obstacleHeight;
+		
+		double MiddleKiri = 400;
+		double MiddleKanan = 400 + ObstacleWidth;
+		double MiddleAtas = obstacleMiddle.getY();
+		double MiddleBawah = obstacleMiddle.getY() + obstacleHeight - 60;
+		
+		boolean intersectTopObstacle = (ballXPos >= topKiri && ballXPos <=topKanan) && (ballYPos >= topAtas && ballYPos <=topBawah);
+		boolean intersectBottomObstacle = ballXPos >= bottomKiri && ballXPos <= bottomKanan && ballYPos >= bottomAtas && ballYPos <= bottomBawah;
+		boolean intersectMiddleObstacle = (ballXPos >= MiddleKiri && ballXPos <=MiddleKanan) && (ballYPos >= MiddleAtas && ballYPos <=MiddleBawah);
+		
+		
+		if(intersectTopObstacle || intersectBottomObstacle || intersectMiddleObstacle) {
+			ballYSpeed += 1 * Math.signum(ballYSpeed);
+			ballXSpeed += 1 * Math.signum(ballXSpeed);
+			ballXSpeed *= -1;
+			ballYSpeed *= -1;
+		}
+	}
+	
+	private void createGameLoop(){
+		
+        gameTimer = new AnimationTimer() {
+
+            @Override
+            public void handle(long arg0) {
+                moveObstacle();
+            } 
+            
+        };
+
+        gameTimer.start();
+    }
+	boolean flagTop = false;
+	boolean flagBottom = false;
+	boolean flagMiddle = false;
+	
+	private void moveObstacle() {
+//		System.out.println("ini Y Top : " + obstacleTop.getY());
+//		System.out.println("ini Y Bottom : " + obstacleBottom.getY());
+//		System.out.println("ini Y Middle : " + obstacleMiddle.getY());
+		
+		if(obstacleTop.getY() < 100 && !flagTop) {
+			obstacleTop.setY(obstacleTop.getY() + 10 );
+		}else if(obstacleTop.getY()==100 && !flagTop) {
+			flagTop = true;
+		}else if(obstacleTop.getY() == 0 && flagTop) {
+			flagTop = false;
+		}else if(flagTop) {
+			obstacleTop.setY(obstacleTop.getY() - 10 );
+		}
+		
+		//****************************************************************
+		
+		if(obstacleMiddle.getY() < 300 && !flagMiddle) {
+			obstacleMiddle.setY(obstacleMiddle.getY() + 7 );
+		}else if(obstacleMiddle.getY()==300 && !flagMiddle) {
+			flagMiddle = true;
+		}else if(obstacleMiddle.getY() == 230 && flagMiddle) {
+			flagMiddle = false;
+		}else if(flagMiddle) {
+			obstacleMiddle.setY(obstacleMiddle.getY() - 7 );
+		}
+		
+		
+		//****************************************************************
+		
+		if(obstacleBottom.getY() < 500 && !flagBottom) {
+			obstacleBottom.setY(obstacleBottom.getY() + 10 );
+		}else if(obstacleBottom.getY()== 500 && !flagBottom) {
+			flagBottom = true;
+		}else if(obstacleBottom.getY() == 400 && flagBottom) {
+			flagBottom = false;
+		}else if(flagBottom) {
+			obstacleBottom.setY(obstacleBottom.getY() - 10 );
+		}
+		
+	}
+
+
 		
 }

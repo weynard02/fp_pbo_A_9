@@ -453,9 +453,9 @@ public class GameView extends Application {
 	    obstacleMiddle = new Rectangle(xPosition, yPosition + 230, ObstacleWidth, obstacleHeight -60);
 	    obstacleBottom = new Rectangle(xPosition,yPosition + 400,  ObstacleWidth,obstacleHeight );
 	    
-	    obstacleTop.setFill(javafx.scene.paint.Color.WHITE);
-	    obstacleBottom.setFill(javafx.scene.paint.Color.WHITE);
-	    obstacleMiddle.setFill(javafx.scene.paint.Color.WHITE);
+	    obstacleTop.setFill(fontColor);
+	    obstacleBottom.setFill(fontColor);
+	    obstacleMiddle.setFill(fontColor);
 	    gamePane.getChildren().addAll(obstacleTop, obstacleBottom, obstacleMiddle);
 }
 	    

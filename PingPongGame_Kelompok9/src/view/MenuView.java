@@ -59,6 +59,7 @@ public class MenuView {
 		createToggleGroup();
 	}
 	
+
 	private void createSubScene() {
 		createCreditsSubScene();
 		createHelpSubScene();
@@ -247,6 +248,7 @@ public class MenuView {
 						game.setMouseChosen(selectedControllerRB.isMouseChosen());
 						game.setHardMode(isHardModeOn);
 						game.start(mainStage);
+//						game.closeGame(mainStage);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -273,6 +275,7 @@ public class MenuView {
 						game.setFontColor(selectedColorRB.getFontColor());
 						game.setHardMode(isHardModeOn);
 						game.vs2pStart(mainStage);
+//						game.closeGame(mainStage);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();

@@ -1,16 +1,22 @@
 package view;
 
 
+import java.util.List;
 import java.util.Random;
 
+import application.Main;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
@@ -20,6 +26,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import model.PongButton;
+import model.PongSubScene;
 
 public class GameView extends Application {
 	private static final int width = 800;
@@ -47,6 +55,9 @@ public class GameView extends Application {
 	private AnimationTimer gameTimer;
 	private Color backgroundColor;
 	private Color fontColor;
+	private Timeline tl;
+
+//	private Button btnPause;
 	
 	private boolean isUpPressed;
 	private boolean isDownPressed;
@@ -54,17 +65,23 @@ public class GameView extends Application {
 	private boolean isSPressed;
 	private boolean isMouseChosen;	
 	private boolean isHardModeOn;
+
+	
+	List <PongButton> buttonPause;
 	
 	@Override
 	public void start(Stage gameStage) throws Exception {
+
 		gameStage.setTitle("Ping Pong");
 		canvas = new Canvas(width, height);
-		initialize();
+		initialize(gameStage);
 		gamePane = new AnchorPane(canvas);
 		if (isHardModeOn == true) {
 			obstacleHandler();
 			createGameLoop();
 		}
+		
+
 		gameScene = new Scene(gamePane);
 		gameStage.setScene(gameScene);
 		
@@ -73,15 +90,17 @@ public class GameView extends Application {
 	
 	public void vs2pStart(Stage gameStage) throws Exception {
 
+
 		gameStage.setTitle("Ping Pong");
 		canvas = new Canvas(width, height);
-		vs2pInitialize();
+		vs2pInitialize(gameStage);
 		
 		gamePane = new AnchorPane(canvas);
 		if (isHardModeOn == true) {
 			obstacleHandler();
 			createGameLoop();
 		}
+		
 		gameScene = new Scene(gamePane);
 		gameStage.setScene(gameScene);
 		gameStage.show();
@@ -108,36 +127,43 @@ public class GameView extends Application {
 		return isHardModeOn;
 	}
 	
-	private void initialize(){
+	private void initialize(Stage gameStage){
 		//background size
 		GraphicsContext gc = canvas.getGraphicsContext2D();
 		
+		
 		//JavaFX Timeline = free form animation defined by KeyFrames and their duration 
-		Timeline tl = new Timeline(new KeyFrame(Duration.millis(10), e -> run(gc)));
+		tl = new Timeline(new KeyFrame(Duration.millis(10), e -> run(gc)));
 		//number of cycles in animation INDEFINITE = repeat indefinitely
 		tl.setCycleCount(Timeline.INDEFINITE);
 		
-		if (isMouseChosen)
+		if (isMouseChosen) {
 			mouseControl();
-		else
-			keyboardControl();
+			pauseGameMouse(gc, gameStage);
+		}	
+		else {
+			keyboardControl(gc, gameStage);
+		}
+			
 		
 		tl.play();
 	}
 	
-	private void vs2pInitialize(){
+	private void vs2pInitialize(Stage gameStage){
 		//background size
 		GraphicsContext gc = canvas.getGraphicsContext2D();
 		
+		
 		//JavaFX Timeline = free form animation defined by KeyFrames and their duration 
-		Timeline tl = new Timeline(new KeyFrame(Duration.millis(10), e -> vs2pRun(gc)));
+		tl = new Timeline(new KeyFrame(Duration.millis(10), e -> vs2pRun(gc)));
 		//number of cycles in animation INDEFINITE = repeat indefinitely
+		pauseGameMouse(gc, gameStage);
 		tl.setCycleCount(Timeline.INDEFINITE);
-		vs2pKeyboardControl();
+		vs2pKeyboardControl(gc, gameStage);
 		tl.play();
 	}
 	
-	private void keyboardControl() {
+	private void keyboardControl(GraphicsContext gc, Stage gameStage) {
 		
 		//keyboard control
 		canvas.setFocusTraversable(true);
@@ -157,6 +183,7 @@ public class GameView extends Application {
 					gameStarted = true;
 					playerOneYPos = height / 2;
 				}
+				pauseGameMouse(gc, gameStage);
 			}
 			
 		});
@@ -181,7 +208,7 @@ public class GameView extends Application {
 		
 	}
 	
-	private void vs2pKeyboardControl() {
+	private void vs2pKeyboardControl(GraphicsContext gc, Stage gameStage) {
 		
 		//keyboard control
 		canvas.setFocusTraversable(true);
@@ -210,6 +237,7 @@ public class GameView extends Application {
 					isSPressed = true;
 					setP1YDirection();
 				}
+				pauseGameMouse(gc, gameStage);
 			}
 			
 		});
@@ -553,6 +581,41 @@ public class GameView extends Application {
 		}
 		
 	}
-	
+		
+
+	boolean pauseFlag = true;
+	private void pauseGameMouse(GraphicsContext gc, Stage gameStage) {
+		
+		canvas.setFocusTraversable(true);
+		canvas.setOnKeyPressed(new EventHandler<KeyEvent>(){
+
+		
+			
+			@Override
+			public void handle(KeyEvent event) {
+				// TODO Auto-generated method stub
+				if(event.getCode() == KeyCode.ESCAPE && pauseFlag ) {
+					tl.pause();
+					gc.strokeText("Click SPACE to Continue", width/2, height/2);
+					
+					pauseFlag = false;
+				}else if(event.getCode() == KeyCode.ESCAPE && !pauseFlag) {
+					// BACK TO MAIN MENU
+					gameStage.close();
+					MenuView menu = new MenuView();
+					menu.getMainStage().show();
+					
+					pauseFlag = true; 
+				}else if(event.getCode() == KeyCode.SPACE ) {
+					tl.play();
+					pauseFlag = true;
+				}
+				
+			}
+			
+		});
+
+	}
+
 	
 }

@@ -47,23 +47,24 @@ public class GameView extends Application {
 	private AnimationTimer gameTimer;
 	private Color backgroundColor;
 	private Color fontColor;
-
 	
 	private boolean isUpPressed;
 	private boolean isDownPressed;
 	private boolean isWPressed;
 	private boolean isSPressed;
 	private boolean isMouseChosen;	
+	private boolean isHardModeOn;
 	
 	@Override
 	public void start(Stage gameStage) throws Exception {
 		gameStage.setTitle("Ping Pong");
 		canvas = new Canvas(width, height);
 		initialize();
-		
 		gamePane = new AnchorPane(canvas);
-		obstacleHandler();
-		createGameLoop();
+		if (isHardModeOn == true) {
+			obstacleHandler();
+			createGameLoop();
+		}
 		gameScene = new Scene(gamePane);
 		gameStage.setScene(gameScene);
 		
@@ -77,8 +78,10 @@ public class GameView extends Application {
 		vs2pInitialize();
 		
 		gamePane = new AnchorPane(canvas);
-		obstacleHandler();
-		createGameLoop();
+		if (isHardModeOn == true) {
+			obstacleHandler();
+			createGameLoop();
+		}
 		gameScene = new Scene(gamePane);
 		gameStage.setScene(gameScene);
 		gameStage.show();
@@ -96,7 +99,15 @@ public class GameView extends Application {
 	public void setMouseChosen(boolean isMouseChosen) {
 		this.isMouseChosen = isMouseChosen;
 	}
-
+	
+	public void setHardMode(boolean isHardModeOn) {
+		this.isHardModeOn = isHardModeOn;
+	}
+	
+	public boolean getHardMode() {
+		return isHardModeOn;
+	}
+	
 	private void initialize(){
 		//background size
 		GraphicsContext gc = canvas.getGraphicsContext2D();
@@ -352,7 +363,7 @@ public class GameView extends Application {
 			ballXSpeed *= -1;
 			ballYSpeed *= -1;
 		}
-		collisionObstacle();
+		if (isHardModeOn == true) collisionObstacle();
 		
 		
 		
@@ -422,7 +433,7 @@ public class GameView extends Application {
 			ballYSpeed *= -1;
 		}
 		
-		collisionObstacle();
+		if (isHardModeOn == true) collisionObstacle();
 		
 		//draw score
 		gc.fillText(scoreP1 + "\t\t\t\t\t\t\t\t" + scoreP2, width / 2, 100);
@@ -442,9 +453,9 @@ public class GameView extends Application {
 	    obstacleMiddle = new Rectangle(xPosition, yPosition + 230, ObstacleWidth, obstacleHeight -60);
 	    obstacleBottom = new Rectangle(xPosition,yPosition + 400,  ObstacleWidth,obstacleHeight );
 	    
-	    obstacleTop.setFill(javafx.scene.paint.Color.WHITE);
-	    obstacleBottom.setFill(javafx.scene.paint.Color.WHITE);
-	    obstacleMiddle.setFill(javafx.scene.paint.Color.WHITE);
+	    obstacleTop.setFill(fontColor);
+	    obstacleBottom.setFill(fontColor);
+	    obstacleMiddle.setFill(fontColor);
 	    gamePane.getChildren().addAll(obstacleTop, obstacleBottom, obstacleMiddle);
 }
 	    
@@ -453,7 +464,6 @@ public class GameView extends Application {
 	private void collisionObstacle() {
 		double obstacleHeight = 100;
 		int ObstacleWidth = 20;
-		System.out.println("ini Y bola : " + ballYPos);
 		
 		
 		
@@ -543,7 +553,6 @@ public class GameView extends Application {
 		}
 		
 	}
-
-
-		
+	
+	
 }

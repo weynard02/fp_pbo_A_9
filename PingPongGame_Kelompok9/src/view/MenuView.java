@@ -33,11 +33,15 @@ public class MenuView {
 	private PongSubScene helpSubScene;
 	private PongSubScene vsCPUSubScene;
 	private PongSubScene vs2PSubScene;
+	private PongSubScene hardModeOffSubScene;
+	private PongSubScene hardModeOnSubScene;
 	ColorToggleGroup vsCPUTgColor;
 	ColorToggleGroup vs2PTgColor;
 	ControllerToggleGroup tgController;
+	private boolean isHardModeOn = false;
 	
 	List <PongButton> menuButtons;
+	
 	
 	public MenuView() {
 		menuButtons = new ArrayList<>();
@@ -58,6 +62,8 @@ public class MenuView {
 	private void createSubScene() {
 		createCreditsSubScene();
 		createHelpSubScene();
+		createHardModeOffSubScene();
+		createHardModeOnSubScene();
 		createVSCPUSubScene();
 		createVS2PSubScene();
 	}
@@ -102,6 +108,28 @@ public class MenuView {
 		helpSubScene.getPane().getChildren().add(createToBackButton(helpSubScene));
 	}
 	
+	private void createHardModeOffSubScene() {
+		hardModeOffSubScene = new PongSubScene();
+		mainPane.getChildren().add(hardModeOffSubScene);
+		InfoLabel hardModeLabel = new InfoLabel("Obstacles OFF");
+		hardModeLabel.setLayoutX(100);
+		hardModeLabel.setLayoutY(-80);
+		hardModeOffSubScene.getPane().getChildren().add(hardModeLabel);
+		hardModeOffSubScene.getPane().getChildren().add(createToBackButton(hardModeOffSubScene));
+		
+	}
+	
+	private void createHardModeOnSubScene() {
+		hardModeOnSubScene = new PongSubScene();
+		mainPane.getChildren().add(hardModeOnSubScene);
+		InfoLabel hardModeLabel = new InfoLabel("Obstacles ON");
+		hardModeLabel.setLayoutX(100);
+		hardModeLabel.setLayoutY(-80);
+		hardModeOnSubScene.getPane().getChildren().add(hardModeLabel);
+		hardModeOnSubScene.getPane().getChildren().add(createToBackButton(hardModeOnSubScene));
+		
+	}
+	
 	private void createVSCPUSubScene() {
 		vsCPUSubScene = new PongSubScene();
 		mainPane.getChildren().add(vsCPUSubScene);
@@ -128,7 +156,7 @@ public class MenuView {
 	
 	private void addMenuButton(PongButton button) {
 		button.setLayoutX(300);
-		button.setLayoutY(200 + menuButtons.size()*80);
+		button.setLayoutY(200 + menuButtons.size()*60);
 		menuButtons.add(button);
 		mainPane.getChildren().add(button);
 	}
@@ -140,13 +168,20 @@ public class MenuView {
 		createVS2PButton();
 		createCreditsButton();
 		createHelpButton();
+		createHardButton();
 		createToBackButton(vsCPUSubScene);
 		createToBackButton(vs2PSubScene);
 		createToBackButton(creditsSubScene);
 		createToBackButton(helpSubScene);
+		createToBackButton(hardModeOffSubScene);
+		createToBackButton(hardModeOnSubScene);
 		createExitButton();
 	}
 	
+
+
+	
+
 	private void createToggleGroup() {
 		createVSCPUTgColor();
 		createVS2PTgColor();
@@ -210,6 +245,7 @@ public class MenuView {
 						game.setBackgroundColor(selectedColorRB.getBackgroundColor());
 						game.setFontColor(selectedColorRB.getFontColor());
 						game.setMouseChosen(selectedControllerRB.isMouseChosen());
+						game.setHardMode(isHardModeOn);
 						game.start(mainStage);
 					}
 				} catch (Exception e) {
@@ -235,6 +271,7 @@ public class MenuView {
 						GameView game = new GameView();
 						game.setBackgroundColor(selectedColorRB.getBackgroundColor());
 						game.setFontColor(selectedColorRB.getFontColor());
+						game.setHardMode(isHardModeOn);
 						game.vs2pStart(mainStage);
 					}
 				} catch (Exception e) {
@@ -319,6 +356,27 @@ public class MenuView {
 			
 		});
 		
+	}
+	
+	private void createHardButton() {
+		PongButton hardButton = new PongButton("HARD MODE");
+		addMenuButton(hardButton);
+		
+		hardButton.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				if (isHardModeOn) {
+					isHardModeOn = false;
+					moveSubScene(hardModeOffSubScene);
+				}
+				else {
+					isHardModeOn = true;
+					moveSubScene(hardModeOnSubScene);
+				}				
+			}
+			
+		});
 	}
 	
 	private void createExitButton() {

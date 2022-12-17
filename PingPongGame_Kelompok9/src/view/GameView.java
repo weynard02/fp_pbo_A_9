@@ -163,6 +163,7 @@ public class GameView extends Application {
 		vs2pKeyboardControl(gc, gameStage);
 		tl.play();
 	}
+	boolean inSpace = true;
 	
 	private void keyboardControl(GraphicsContext gc, Stage gameStage) {
 		
@@ -180,12 +181,13 @@ public class GameView extends Application {
 					isDownPressed = true;
 					setYDirection();
 				}
-				else if (event.getCode() == KeyCode.SPACE) {
+				else if (event.getCode() == KeyCode.SPACE && inSpace) {
 					gameStarted = true;
 					playerOneYPos = height / 2;
+					inSpace = false;
 				}
 				
-				if(event.getCode() == KeyCode.ESCAPE && pauseFlag ) {
+				else if(event.getCode() == KeyCode.ESCAPE && pauseFlag ) {
 					tl.pause();
 					gc.strokeText("Click SPACE to Continue", width/2, height/2);
 					
@@ -197,7 +199,7 @@ public class GameView extends Application {
 					menu.getMainStage().show();
 					
 					pauseFlag = true; 
-				}else if(event.getCode() == KeyCode.SPACE ) {
+				}else if(event.getCode() == KeyCode.SPACE && !inSpace ) {
 					tl.play();
 					pauseFlag = true;
 				}
@@ -225,7 +227,7 @@ public class GameView extends Application {
 		
 		
 	}
-	
+	boolean vs2inSpace = true;
 	private void vs2pKeyboardControl(GraphicsContext gc, Stage gameStage) {
 		
 		//keyboard control
@@ -242,10 +244,11 @@ public class GameView extends Application {
 					isDownPressed = true;
 					setP2YDirection();
 				}
-				else if (event.getCode() == KeyCode.SPACE) {
+				else if (event.getCode() == KeyCode.SPACE && vs2inSpace) {
 					gameStarted = true;
 					playerOneYPos = height / 2;
 					playerTwoYPos = height / 2;
+					vs2inSpace = false;
 				}
 				else if (event.getCode() == KeyCode.W) {
 					isWPressed = true;
@@ -256,7 +259,7 @@ public class GameView extends Application {
 					setP1YDirection();
 				}
 				
-				if(event.getCode() == KeyCode.ESCAPE && pauseFlag ) {
+				else if(event.getCode() == KeyCode.ESCAPE && pauseFlag ) {
 					tl.pause();
 					gc.strokeText("Click SPACE to Continue", width/2, height/2);
 					
@@ -268,7 +271,7 @@ public class GameView extends Application {
 					menu.getMainStage().show();
 					
 					pauseFlag = true; 
-				}else if(event.getCode() == KeyCode.SPACE ) {
+				}else if(event.getCode() == KeyCode.SPACE && !vs2inSpace ) {
 					tl.play();
 					pauseFlag = true;
 				}

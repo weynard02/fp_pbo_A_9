@@ -31,6 +31,8 @@ import model.TitleLabel;
 import model.ColorToggleGroup;
 import model.ControllerRadioButton;
 import model.ControllerToggleGroup;
+import model.HardModeRadioButton;
+import model.HardModeToggleGroup;
 
 
 public class MenuView {
@@ -44,24 +46,23 @@ public class MenuView {
 	private PongSubScene vsCPUSubScene;
 	private PongSubScene vs2PSubScene;
 	private PongSubScene hardModeSubScene;
-//	private PongSubScene hardModeOnSubScene;
 	ColorToggleGroup vsCPUTgColor;
 	ColorToggleGroup vs2PTgColor;
 	ControllerToggleGroup tgController;
+	HardModeToggleGroup tgMode;
 	
-	public boolean isHard = false;
-	private boolean isHardModeOn = false;
-	private final String FONT_PATH = "src/model/resources/kenvector_future_thin.ttf";
+	private boolean isHard = false;
+	
 	
 	List <PongButton> menuButtons;
 	
 	
 	public MenuView() {
-//		ImageView logo = new ImageView("\\model\\resources\\Ping-Pong-icon.png");
 		menuButtons = new ArrayList<>();
 		vsCPUTgColor = new ColorToggleGroup();
 		vs2PTgColor = new ColorToggleGroup();
 		tgController = new ControllerToggleGroup();
+		tgMode = new HardModeToggleGroup();
 		mainPane = new AnchorPane();
 		mainScene = new Scene(mainPane, WIDTH, HEIGHT);
 		mainStage = new Stage();
@@ -82,7 +83,6 @@ public class MenuView {
 		createCreditsSubScene();
 		createHelpSubScene();
 		createHardModeSubScene();
-//		createHardModeOnSubScene();
 		createVSCPUSubScene();
 		createVS2PSubScene();
 	}
@@ -131,67 +131,8 @@ public class MenuView {
 	
 	private void createHardModeSubScene() {
 		hardModeSubScene = new PongSubScene();
-		mainPane.getChildren().add(hardModeSubScene);
-
-		//**************************************Radio Button********************
-		RadioButton r1 = new RadioButton("NORMAL");
-	    RadioButton r2 = new RadioButton("HARD");
-	    
-	    ToggleGroup tg = new ToggleGroup();
-	    
-
-	    r1.setLayoutX(100);
-	    r1.setLayoutY(150);
-	    r2.setLayoutX(400);
-	    r2.setLayoutY(150);
-	    
-	    r1.setToggleGroup(tg);
-	    r2.setToggleGroup(tg);
-	    // nilai default r1
-	    r1.setSelected(true);
-	    
-	    hardModeSubScene.getPane().getChildren().addAll(r1,r2);
-
-	    try {
-	        r1.setFont(Font.loadFont(new FileInputStream(FONT_PATH), 24));
-	    } catch (FileNotFoundException e) {
-	        r1.setFont(Font.font("Verdana", 24));
-	    }
-
-	    try {
-	        r2.setFont(Font.loadFont(new FileInputStream(FONT_PATH), 24));
-	    } catch (FileNotFoundException e) {
-	        r2.setFont(Font.font("Verdana", 24));
-	    }
-	    
-	   	
-	    
-	    
-	    tg.selectedToggleProperty().addListener(new ChangeListener<Toggle>() 
-	    {
-
-			@Override
-			public void changed(ObservableValue<? extends Toggle> arg0, Toggle arg1, Toggle arg2) {
-				// TODO Auto-generated method stub
-				RadioButton rb = (RadioButton)tg.getSelectedToggle();
-				  
-	            if (rb != null) {
-	                if(rb.getText()=="NORMAL") {
-	                	isHard = false;
-	                	
-	                }else if(rb.getText() == "HARD") {
-	                	isHard = true;
-	                	
-	                }
-
-
-	            }
-			}
-	    });
-        
-        
+		mainPane.getChildren().add(hardModeSubScene);        
         hardModeSubScene.getPane().getChildren().add(createToBackButton(hardModeSubScene));
-        
 		
 	}
 	
@@ -240,7 +181,6 @@ public class MenuView {
 		createToBackButton(creditsSubScene);
 		createToBackButton(helpSubScene);
 		createToBackButton(hardModeSubScene);
-//		createToBackButton(hardModeOnSubScene);
 		createExitButton();
 	}
 	
@@ -252,8 +192,12 @@ public class MenuView {
 		createVSCPUTgColor();
 		createVS2PTgColor();
 		createTgController();
+		createTgHardMode();
 	}
 	
+	
+
+
 	private void createVSCPUTgColor() {
 		TitleLabel backgroundColorLabel = new TitleLabel("background color");
 		backgroundColorLabel.setLayoutX(35);
@@ -294,6 +238,14 @@ public class MenuView {
 		}
 	}
 	
+	private void createTgHardMode() {
+		for (int i = 0; i < 2; i++) {
+			tgMode.getListMode().get(i).setLayoutX(100+300*i);
+			tgMode.getListMode().get(i).setLayoutY(150);
+			hardModeSubScene.getPane().getChildren().add(tgMode.getListMode().get(i));
+		}
+		
+	}
 	private PongButton createVSCPUStartButton() {
 		PongButton vsCPUStartButton = new PongButton("Start");
 		vsCPUStartButton.setLayoutX(390);
@@ -306,12 +258,13 @@ public class MenuView {
 				try {
 					ColorRadioButton selectedColorRB = (ColorRadioButton) vsCPUTgColor.getTgBackgroundColor().getSelectedToggle();
 					ControllerRadioButton selectedControllerRB = (ControllerRadioButton) tgController.getTgController().getSelectedToggle();
-					if(selectedColorRB != null && selectedControllerRB != null) {
+					HardModeRadioButton selectedMode = (HardModeRadioButton) tgMode.getTgMode().getSelectedToggle();
+					if(selectedColorRB != null && selectedControllerRB != null && selectedMode != null) {
 						GameView game = new GameView();
 						game.setBackgroundColor(selectedColorRB.getBackgroundColor());
 						game.setFontColor(selectedColorRB.getFontColor());
 						game.setMouseChosen(selectedControllerRB.isMouseChosen());
-						game.setHardMode(isHard);
+						game.setHardMode(selectedMode.isHardMode());
 						game.start(mainStage);
 
 					}
@@ -334,13 +287,13 @@ public class MenuView {
 			public void handle(ActionEvent event) {
 				try {
 					ColorRadioButton selectedColorRB = (ColorRadioButton) vs2PTgColor.getTgBackgroundColor().getSelectedToggle();
-					if(selectedColorRB != null) {
+					HardModeRadioButton selectedMode = (HardModeRadioButton) tgMode.getTgMode().getSelectedToggle();
+					if(selectedColorRB != null && selectedMode != null) {
 						GameView game = new GameView();
 						game.setBackgroundColor(selectedColorRB.getBackgroundColor());
 						game.setFontColor(selectedColorRB.getFontColor());
-						game.setHardMode(isHard);
+						game.setHardMode(selectedMode.isHardMode());
 						game.vs2pStart(mainStage);
-//						game.closeGame(mainStage);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -434,14 +387,7 @@ public class MenuView {
 
 			@Override
 			public void handle(ActionEvent event) {
-				if (isHard) {
-					isHard = false;
-					moveSubScene(hardModeSubScene);
-				}
-				else {
-					isHard = true;
-					moveSubScene(hardModeSubScene);
-				}				
+				moveSubScene(hardModeSubScene);
 			}
 			
 		});

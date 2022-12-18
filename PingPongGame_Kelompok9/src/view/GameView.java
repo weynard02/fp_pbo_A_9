@@ -59,6 +59,7 @@ public class GameView extends Application {
 	private Color fontColor;
 	private Timeline tl;
 	boolean pauseFlag = true;
+	
 
 //	private Button btnPause;
 	
@@ -66,11 +67,14 @@ public class GameView extends Application {
 	private boolean isDownPressed;
 	private boolean isWPressed;
 	private boolean isSPressed;
-	private boolean isMouseChosen;	
-	private boolean isHardModeOn;
+	private boolean isMouseChosen;
+	private boolean isHard = false;
+
 
 	
 	List <PongButton> buttonPause;
+	
+	
 	
 	@Override
 	public void start(Stage gameStage) throws Exception {
@@ -79,13 +83,13 @@ public class GameView extends Application {
 		canvas = new Canvas(width, height);
 		initialize(gameStage);
 		gamePane = new AnchorPane(canvas);
-		if (isHardModeOn == true) {
+		if (isHard == true) {
 			obstacleHandler();
 			createGameLoop();
 		}
 //		
 		
-//		gameStage.getIcons().add(new Image("\\model\\resources\\Ping-Pong-icon.png"));
+
 		gameScene = new Scene(gamePane);
 		gameStage.setScene(gameScene);
 		
@@ -100,7 +104,7 @@ public class GameView extends Application {
 		vs2pInitialize(gameStage);
 		
 		gamePane = new AnchorPane(canvas);
-		if (isHardModeOn == true) {
+		if (isHard == true) {
 			obstacleHandler();
 			createGameLoop();
 		}
@@ -117,19 +121,15 @@ public class GameView extends Application {
 	public void setFontColor(Color fontColor) {
 		this.fontColor = fontColor;
 	}
-	
-	
 	public void setMouseChosen(boolean isMouseChosen) {
 		this.isMouseChosen = isMouseChosen;
 	}
-	
-	public void setHardMode(boolean isHardModeOn) {
-		this.isHardModeOn = isHardModeOn;
+	public void setHardMode(boolean isHard) {
+		this.isHard = isHard;
 	}
 	
-	public boolean getHardMode() {
-		return isHardModeOn;
-	}
+	
+	
 	
 	private void initialize(Stage gameStage){
 		//background size
@@ -193,6 +193,7 @@ public class GameView extends Application {
 				else if(event.getCode() == KeyCode.ESCAPE && pauseFlag && gameStarted) {
 					tl.pause();
 					gc.strokeText("Press SPACE to Continue", width/2, height/2);
+					gc.strokeText("Press ESC to main menu", width/2, height/2 + 30);
 					
 					pauseFlag = false;
 				}else if(event.getCode() == KeyCode.ESCAPE && !pauseFlag && gameStarted) {
@@ -265,6 +266,7 @@ public class GameView extends Application {
 				else if(event.getCode() == KeyCode.ESCAPE && pauseFlag && gameStarted) {
 					tl.pause();
 					gc.strokeText("Press SPACE to Continue", width/2, height/2);
+					gc.strokeText("Press ESC to main menu", width/2, height/2 + 30);
 					
 					pauseFlag = false;
 				}else if(event.getCode() == KeyCode.ESCAPE && !pauseFlag && gameStarted) {
@@ -434,7 +436,7 @@ public class GameView extends Application {
 			ballXSpeed *= -1;
 			ballYSpeed *= -1;
 		}
-		if (isHardModeOn == true) collisionObstacle();
+		if (isHard == true) collisionObstacle();
 		
 		
 		
@@ -506,7 +508,7 @@ public class GameView extends Application {
 			ballYSpeed *= -1;
 		}
 		
-		if (isHardModeOn == true) collisionObstacle();
+		if (isHard == true) collisionObstacle();
 		
 		//draw score
 		gc.fillText(scoreP1 + "\t\t\t\t\t\t\t\t" + scoreP2, width / 2, 100);
@@ -642,6 +644,7 @@ public class GameView extends Application {
 				if(event.getCode() == KeyCode.ESCAPE && pauseFlag && gameStarted) {
 					tl.pause();
 					gc.strokeText("Click to Continue", width/2, height/2);
+					gc.strokeText("Press ESC to main menu", width/2, height/2 + 30);
 					
 					pauseFlag = false;
 				}else if(event.getCode() == KeyCode.ESCAPE && !pauseFlag && gameStarted) {

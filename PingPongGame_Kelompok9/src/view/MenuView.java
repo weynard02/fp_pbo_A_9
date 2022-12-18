@@ -1,12 +1,19 @@
 package view;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import java.util.List;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -14,6 +21,7 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import model.InfoLabel;
 import model.PongButton;
@@ -23,6 +31,8 @@ import model.TitleLabel;
 import model.ColorToggleGroup;
 import model.ControllerRadioButton;
 import model.ControllerToggleGroup;
+import model.HardModeRadioButton;
+import model.HardModeToggleGroup;
 
 
 public class MenuView {
@@ -35,22 +45,24 @@ public class MenuView {
 	private PongSubScene helpSubScene;
 	private PongSubScene vsCPUSubScene;
 	private PongSubScene vs2PSubScene;
-	private PongSubScene hardModeOffSubScene;
-	private PongSubScene hardModeOnSubScene;
+	private PongSubScene hardModeSubScene;
 	ColorToggleGroup vsCPUTgColor;
 	ColorToggleGroup vs2PTgColor;
 	ControllerToggleGroup tgController;
-	private boolean isHardModeOn = false;
+	HardModeToggleGroup tgMode;
+	
+	private boolean isHard = false;
+	
 	
 	List <PongButton> menuButtons;
 	
 	
 	public MenuView() {
-//		ImageView logo = new ImageView("\\model\\resources\\Ping-Pong-icon.png");
 		menuButtons = new ArrayList<>();
 		vsCPUTgColor = new ColorToggleGroup();
 		vs2PTgColor = new ColorToggleGroup();
 		tgController = new ControllerToggleGroup();
+		tgMode = new HardModeToggleGroup();
 		mainPane = new AnchorPane();
 		mainScene = new Scene(mainPane, WIDTH, HEIGHT);
 		mainStage = new Stage();
@@ -70,8 +82,7 @@ public class MenuView {
 	private void createSubScene() {
 		createCreditsSubScene();
 		createHelpSubScene();
-		createHardModeOffSubScene();
-		createHardModeOnSubScene();
+		createHardModeSubScene();
 		createVSCPUSubScene();
 		createVS2PSubScene();
 	}
@@ -115,28 +126,16 @@ public class MenuView {
 		helpSubScene.getPane().getChildren().add(creditsLabel);
 		helpSubScene.getPane().getChildren().add(createToBackButton(helpSubScene));
 	}
+
+
 	
-	private void createHardModeOffSubScene() {
-		hardModeOffSubScene = new PongSubScene();
-		mainPane.getChildren().add(hardModeOffSubScene);
-		InfoLabel hardModeLabel = new InfoLabel("Obstacles OFF");
-		hardModeLabel.setLayoutX(100);
-		hardModeLabel.setLayoutY(-80);
-		hardModeOffSubScene.getPane().getChildren().add(hardModeLabel);
-		hardModeOffSubScene.getPane().getChildren().add(createToBackButton(hardModeOffSubScene));
+	private void createHardModeSubScene() {
+		hardModeSubScene = new PongSubScene();
+		mainPane.getChildren().add(hardModeSubScene);        
+        hardModeSubScene.getPane().getChildren().add(createToBackButton(hardModeSubScene));
 		
 	}
 	
-	private void createHardModeOnSubScene() {
-		hardModeOnSubScene = new PongSubScene();
-		mainPane.getChildren().add(hardModeOnSubScene);
-		InfoLabel hardModeLabel = new InfoLabel("Obstacles ON");
-		hardModeLabel.setLayoutX(100);
-		hardModeLabel.setLayoutY(-80);
-		hardModeOnSubScene.getPane().getChildren().add(hardModeLabel);
-		hardModeOnSubScene.getPane().getChildren().add(createToBackButton(hardModeOnSubScene));
-		
-	}
 	
 	private void createVSCPUSubScene() {
 		vsCPUSubScene = new PongSubScene();
@@ -181,8 +180,7 @@ public class MenuView {
 		createToBackButton(vs2PSubScene);
 		createToBackButton(creditsSubScene);
 		createToBackButton(helpSubScene);
-		createToBackButton(hardModeOffSubScene);
-		createToBackButton(hardModeOnSubScene);
+		createToBackButton(hardModeSubScene);
 		createExitButton();
 	}
 	
@@ -194,8 +192,12 @@ public class MenuView {
 		createVSCPUTgColor();
 		createVS2PTgColor();
 		createTgController();
+		createTgHardMode();
 	}
 	
+	
+
+
 	private void createVSCPUTgColor() {
 		TitleLabel backgroundColorLabel = new TitleLabel("background color");
 		backgroundColorLabel.setLayoutX(35);
@@ -236,6 +238,14 @@ public class MenuView {
 		}
 	}
 	
+	private void createTgHardMode() {
+		for (int i = 0; i < 2; i++) {
+			tgMode.getListMode().get(i).setLayoutX(100+300*i);
+			tgMode.getListMode().get(i).setLayoutY(150);
+			hardModeSubScene.getPane().getChildren().add(tgMode.getListMode().get(i));
+		}
+		
+	}
 	private PongButton createVSCPUStartButton() {
 		PongButton vsCPUStartButton = new PongButton("Start");
 		vsCPUStartButton.setLayoutX(390);
@@ -248,14 +258,15 @@ public class MenuView {
 				try {
 					ColorRadioButton selectedColorRB = (ColorRadioButton) vsCPUTgColor.getTgBackgroundColor().getSelectedToggle();
 					ControllerRadioButton selectedControllerRB = (ControllerRadioButton) tgController.getTgController().getSelectedToggle();
-					if(selectedColorRB != null && selectedControllerRB != null) {
+					HardModeRadioButton selectedMode = (HardModeRadioButton) tgMode.getTgMode().getSelectedToggle();
+					if(selectedColorRB != null && selectedControllerRB != null && selectedMode != null) {
 						GameView game = new GameView();
 						game.setBackgroundColor(selectedColorRB.getBackgroundColor());
 						game.setFontColor(selectedColorRB.getFontColor());
 						game.setMouseChosen(selectedControllerRB.isMouseChosen());
-						game.setHardMode(isHardModeOn);
+						game.setHardMode(selectedMode.isHardMode());
 						game.start(mainStage);
-//						game.closeGame(mainStage);
+
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -276,13 +287,13 @@ public class MenuView {
 			public void handle(ActionEvent event) {
 				try {
 					ColorRadioButton selectedColorRB = (ColorRadioButton) vs2PTgColor.getTgBackgroundColor().getSelectedToggle();
-					if(selectedColorRB != null) {
+					HardModeRadioButton selectedMode = (HardModeRadioButton) tgMode.getTgMode().getSelectedToggle();
+					if(selectedColorRB != null && selectedMode != null) {
 						GameView game = new GameView();
 						game.setBackgroundColor(selectedColorRB.getBackgroundColor());
 						game.setFontColor(selectedColorRB.getFontColor());
-						game.setHardMode(isHardModeOn);
+						game.setHardMode(selectedMode.isHardMode());
 						game.vs2pStart(mainStage);
-//						game.closeGame(mainStage);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -369,21 +380,14 @@ public class MenuView {
 	}
 	
 	private void createHardButton() {
-		PongButton hardButton = new PongButton("HARD MODE");
+		PongButton hardButton = new PongButton("MODE");
 		addMenuButton(hardButton);
 		
 		hardButton.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
 			public void handle(ActionEvent event) {
-				if (isHardModeOn) {
-					isHardModeOn = false;
-					moveSubScene(hardModeOffSubScene);
-				}
-				else {
-					isHardModeOn = true;
-					moveSubScene(hardModeOnSubScene);
-				}				
+				moveSubScene(hardModeSubScene);
 			}
 			
 		});

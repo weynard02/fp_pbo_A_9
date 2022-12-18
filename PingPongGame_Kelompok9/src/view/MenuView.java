@@ -1,12 +1,19 @@
 package view;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import java.util.List;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -14,6 +21,7 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import model.InfoLabel;
 import model.PongButton;
@@ -35,12 +43,15 @@ public class MenuView {
 	private PongSubScene helpSubScene;
 	private PongSubScene vsCPUSubScene;
 	private PongSubScene vs2PSubScene;
-	private PongSubScene hardModeOffSubScene;
-	private PongSubScene hardModeOnSubScene;
+	private PongSubScene hardModeSubScene;
+//	private PongSubScene hardModeOnSubScene;
 	ColorToggleGroup vsCPUTgColor;
 	ColorToggleGroup vs2PTgColor;
 	ControllerToggleGroup tgController;
+	
+	public boolean isHard = false;
 	private boolean isHardModeOn = false;
+	private final String FONT_PATH = "src/model/resources/kenvector_future_thin.ttf";
 	
 	List <PongButton> menuButtons;
 	
@@ -70,8 +81,8 @@ public class MenuView {
 	private void createSubScene() {
 		createCreditsSubScene();
 		createHelpSubScene();
-		createHardModeOffSubScene();
-		createHardModeOnSubScene();
+		createHardModeSubScene();
+//		createHardModeOnSubScene();
 		createVSCPUSubScene();
 		createVS2PSubScene();
 	}
@@ -115,28 +126,75 @@ public class MenuView {
 		helpSubScene.getPane().getChildren().add(creditsLabel);
 		helpSubScene.getPane().getChildren().add(createToBackButton(helpSubScene));
 	}
+
+
 	
-	private void createHardModeOffSubScene() {
-		hardModeOffSubScene = new PongSubScene();
-		mainPane.getChildren().add(hardModeOffSubScene);
-		InfoLabel hardModeLabel = new InfoLabel("Obstacles OFF");
-		hardModeLabel.setLayoutX(100);
-		hardModeLabel.setLayoutY(-80);
-		hardModeOffSubScene.getPane().getChildren().add(hardModeLabel);
-		hardModeOffSubScene.getPane().getChildren().add(createToBackButton(hardModeOffSubScene));
+	private void createHardModeSubScene() {
+		hardModeSubScene = new PongSubScene();
+		mainPane.getChildren().add(hardModeSubScene);
+
+		//**************************************Radio Button********************
+		RadioButton r1 = new RadioButton("NORMAL");
+	    RadioButton r2 = new RadioButton("HARD");
+	    
+	    ToggleGroup tg = new ToggleGroup();
+	    
+
+	    r1.setLayoutX(100);
+	    r1.setLayoutY(150);
+	    r2.setLayoutX(400);
+	    r2.setLayoutY(150);
+	    
+	    r1.setToggleGroup(tg);
+	    r2.setToggleGroup(tg);
+	    // nilai default r1
+	    r1.setSelected(true);
+	    
+	    hardModeSubScene.getPane().getChildren().addAll(r1,r2);
+
+	    try {
+	        r1.setFont(Font.loadFont(new FileInputStream(FONT_PATH), 24));
+	    } catch (FileNotFoundException e) {
+	        r1.setFont(Font.font("Verdana", 24));
+	    }
+
+	    try {
+	        r2.setFont(Font.loadFont(new FileInputStream(FONT_PATH), 24));
+	    } catch (FileNotFoundException e) {
+	        r2.setFont(Font.font("Verdana", 24));
+	    }
+	    
+	   	
+	    
+	    
+	    tg.selectedToggleProperty().addListener(new ChangeListener<Toggle>() 
+	    {
+
+			@Override
+			public void changed(ObservableValue<? extends Toggle> arg0, Toggle arg1, Toggle arg2) {
+				// TODO Auto-generated method stub
+				RadioButton rb = (RadioButton)tg.getSelectedToggle();
+				  
+	            if (rb != null) {
+	                if(rb.getText()=="NORMAL") {
+	                	isHard = false;
+	                	
+	                }else if(rb.getText() == "HARD") {
+	                	isHard = true;
+	                	
+	                }
+
+
+	            }
+			}
+	    });
+        
+        
+        hardModeSubScene.getPane().getChildren().add(createToBackButton(hardModeSubScene));
+        
 		
 	}
 	
-	private void createHardModeOnSubScene() {
-		hardModeOnSubScene = new PongSubScene();
-		mainPane.getChildren().add(hardModeOnSubScene);
-		InfoLabel hardModeLabel = new InfoLabel("Obstacles ON");
-		hardModeLabel.setLayoutX(100);
-		hardModeLabel.setLayoutY(-80);
-		hardModeOnSubScene.getPane().getChildren().add(hardModeLabel);
-		hardModeOnSubScene.getPane().getChildren().add(createToBackButton(hardModeOnSubScene));
-		
-	}
 	
 	private void createVSCPUSubScene() {
 		vsCPUSubScene = new PongSubScene();
@@ -181,8 +239,8 @@ public class MenuView {
 		createToBackButton(vs2PSubScene);
 		createToBackButton(creditsSubScene);
 		createToBackButton(helpSubScene);
-		createToBackButton(hardModeOffSubScene);
-		createToBackButton(hardModeOnSubScene);
+		createToBackButton(hardModeSubScene);
+//		createToBackButton(hardModeOnSubScene);
 		createExitButton();
 	}
 	
@@ -253,9 +311,9 @@ public class MenuView {
 						game.setBackgroundColor(selectedColorRB.getBackgroundColor());
 						game.setFontColor(selectedColorRB.getFontColor());
 						game.setMouseChosen(selectedControllerRB.isMouseChosen());
-						game.setHardMode(isHardModeOn);
+						game.setHardMode(isHard);
 						game.start(mainStage);
-//						game.closeGame(mainStage);
+
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -280,7 +338,7 @@ public class MenuView {
 						GameView game = new GameView();
 						game.setBackgroundColor(selectedColorRB.getBackgroundColor());
 						game.setFontColor(selectedColorRB.getFontColor());
-						game.setHardMode(isHardModeOn);
+						game.setHardMode(isHard);
 						game.vs2pStart(mainStage);
 //						game.closeGame(mainStage);
 					}
@@ -369,20 +427,20 @@ public class MenuView {
 	}
 	
 	private void createHardButton() {
-		PongButton hardButton = new PongButton("HARD MODE");
+		PongButton hardButton = new PongButton("MODE");
 		addMenuButton(hardButton);
 		
 		hardButton.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
 			public void handle(ActionEvent event) {
-				if (isHardModeOn) {
-					isHardModeOn = false;
-					moveSubScene(hardModeOffSubScene);
+				if (isHard) {
+					isHard = false;
+					moveSubScene(hardModeSubScene);
 				}
 				else {
-					isHardModeOn = true;
-					moveSubScene(hardModeOnSubScene);
+					isHard = true;
+					moveSubScene(hardModeSubScene);
 				}				
 			}
 			
